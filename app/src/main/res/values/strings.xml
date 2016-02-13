@@ -1,0 +1,27 @@
+<resources>
+<string name="app_name">MyOrganizer</string>
+<string name="action_settings">Settings</string>
+<string name="action_search">Search</string>
+<string name="drawer_open">Open</string>
+<string name="drawer_close">Close</string>
+
+<string name="nav_item_toDo">To do</string>
+<string name="nav_item_calendar">Calendar</string>
+<string name="nav_item_notes">Notes</string>
+
+    <!-- navigation drawer item labels  -->
+<string-array name="nav_drawer_labels">
+<item>@string/nav_item_toDo</item>
+<item>@string/nav_item_calendar</item>
+<item>@string/nav_item_notes</item>
+</string-array>
+
+<string name="title_toDoList">To Do</string>
+<string name="title_calendar">Calendar</string>
+<string name="title_notes">Notes</string>
+
+    <string name="textTab1">"You Are In Tab 1"</string>
+    <string name="textTab2">"You Are In Tab 2"</string>
+    <string name="textTab3">"You Are In Tab 3"</string>
+
+</resources>

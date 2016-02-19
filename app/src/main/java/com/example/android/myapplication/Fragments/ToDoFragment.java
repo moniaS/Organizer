@@ -1,6 +1,7 @@
 package com.example.android.myapplication.Fragments;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.example.android.myapplication.Adapters.InteractiveArrayAdapter;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.ObjectClasses.ToDoItem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class ToDoFragment extends Fragment {
     ListView listview;
     ArrayList<ToDoItem> list;
     ArrayAdapter <ToDoItem> adapter;
+    private Parcelable state;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,28 @@ public class ToDoFragment extends Fragment {
         listview.setAdapter(adapter);
         return view;
     }
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("list", (Serializable) list);
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            //probably orientation change
+            list = (ArrayList<ToDoItem>) savedInstanceState.getSerializable("list");
+        } else {
+            if (list != null) {
+                //returning from backstack, data is fine, do nothing
+            } else {
+                //newly created, compute data
+                list = getTaskList();
+            }
+        }
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Do something that differs the Activity's menu here
@@ -72,7 +96,7 @@ public class ToDoFragment extends Fragment {
         list.add(new ToDoItem("name" + list.size(), "description" + list.size()));
         adapter.notifyDataSetChanged();
     }
-    public List<ToDoItem> getTaskList() {
+    public ArrayList<ToDoItem> getTaskList() {
         list = new ArrayList<ToDoItem>();
         return list;
     }

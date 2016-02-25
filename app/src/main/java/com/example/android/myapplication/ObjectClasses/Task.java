@@ -7,17 +7,19 @@ import java.util.Date;
 /**
  * Created by Monia on 2016-02-15.
  */
-public class ToDoItem {
+public class Task {
+    int id;
     String name;
     String description;
-    Date date;
-    boolean selected;
+    boolean completed;
 
-    public ToDoItem(String name, String description)
+    public Task() {}
+
+    public Task(int id, String name, String description)
     {
         this.name = name;
         this.description = description;
-        selected = false;
+        completed = false;
     }
 
     public String getName() { return name; }
@@ -26,16 +28,24 @@ public class ToDoItem {
         return description;
     }
 
+    public int getId(){
+        return id;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public void setDescription(String description) { this.description = description; }
+
+    public void setId(int id) { this.id = id; }
+
+    public boolean isCompleted() {
+        return completed;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     @Override

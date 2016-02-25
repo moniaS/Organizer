@@ -3,6 +3,7 @@ package com.example.android.myapplication.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,13 +11,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.myapplication.Fragments.ToDoFragment;
+import com.example.android.myapplication.Fragments.CalendarFragment;
+import com.example.android.myapplication.Fragments.AddTaskDialog;
+import com.example.android.myapplication.Fragments.TasksFragment;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.Adapters.SampleFragmentPagerAdapter;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements AddTaskDialog.NewTaskFragmentListener{
 
-    SampleFragmentPagerAdapter adapter;
+    SampleFragmentPagerAdapter mPagerAdapter;
+    TabLayout mTabLayout;
+    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +30,6 @@ public class MainActivity extends AppCompatActivity{
         setToolbar();
         initViews();
     }
-
 
     @Override
     public void onAttachFragment(Fragment fragment) {
@@ -45,7 +49,16 @@ public class MainActivity extends AppCompatActivity{
         switch (item.getItemId()) {
 
             case R.id.action_add:
-                return false;
+                if(mViewPager.getCurrentItem() == 0) {
+                    TasksFragment taskFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+                    showEditDialog();
+                }
+                else if(mViewPager.getCurrentItem() == 1) {
+                    CalendarFragment calendarFragment = (CalendarFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+                    Toast.makeText(this, "Adding selected", Toast.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
             case R.id.action_settings:
                 Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT)
                         .show();
@@ -55,6 +68,19 @@ public class MainActivity extends AppCompatActivity{
         }
         return false;
     }
+
+    @Override
+    public void onFinishEditDialog(String name, String decription) {
+        TasksFragment frag1 = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        frag1.addTaskToList(name, decription);
+    }
+
+    private void showEditDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        AddTaskDialog addingTaskDialog = new AddTaskDialog();
+        addingTaskDialog.show(fm, "dialog_add_task");
+    }
+
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -63,13 +89,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void initViews() {
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new SampleFragmentPagerAdapter(getSupportFragmentManager());
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new SampleFragmentPagerAdapter(getSupportFragmentManager());
 
-        pager.setAdapter(adapter);
-        tabs.setupWithViewPager(pager);
+        mViewPager.setAdapter(mPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
+
     }
-
-
 }

@@ -24,4 +24,7 @@
     <string name="textTab2">"You Are In Tab 2"</string>
     <string name="textTab3">"You Are In Tab 3"</string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="welcome">welcome</string>
+
 </resources>

@@ -17,11 +17,12 @@ import com.example.android.myapplication.Fragments.TasksFragment;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.Adapters.SampleFragmentPagerAdapter;
 
-public class MainActivity extends AppCompatActivity implements AddTaskDialog.NewTaskFragmentListener{
+public class MainActivity extends AppCompatActivity{
 
     SampleFragmentPagerAdapter mPagerAdapter;
     TabLayout mTabLayout;
     ViewPager mViewPager;
+    TasksFragment tasksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,15 +70,13 @@ public class MainActivity extends AppCompatActivity implements AddTaskDialog.New
         return false;
     }
 
-    @Override
-    public void onFinishEditDialog(String name, String decription) {
-        TasksFragment frag1 = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-        frag1.addTaskToList(name, decription);
-    }
+
 
     private void showEditDialog() {
+        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         FragmentManager fm = getSupportFragmentManager();
         AddTaskDialog addingTaskDialog = new AddTaskDialog();
+        addingTaskDialog.setTargetFragment(tasksFragment, 0 );
         addingTaskDialog.show(fm, "dialog_add_task");
     }
 

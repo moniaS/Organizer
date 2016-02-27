@@ -32,15 +32,15 @@ public class TasksDatabaseAdapter {
     public static final String KEY_DESCRIPTION = "description";
     public static final int DESCRIPTION_COLUMN = 2;
     public static final String DESCRIPTION_OPTIONS = "TEXT NOT NULL";
-    public static final String KEY_COMPLETED = "completed";
-    public static final int COMPLETED_COLUMN = 3;
+    public static final String KEY_COMPLETED= "completed";
     public static final String COMPLETED_OPTIONS = "INTEGER DEFAULT 0";
+    public static final int COMPLETED_COLUMN = 3;
 
     private static final String DB_CREATE_TASKS_TABLE =
             "CREATE TABLE " + TASKS_TABLE + "( " +
                     KEY_ID + " " + ID_OPTIONS + ", " +
                     KEY_NAME + " " + NAME_OPTIONS + ", " +
-                    KEY_DESCRIPTION + " " + DESCRIPTION_OPTIONS + ", " +
+                    KEY_DESCRIPTION + " " + DESCRIPTION_OPTIONS +
                     KEY_COMPLETED + " " + COMPLETED_OPTIONS +
                     ");";
     private static final String DROP_TODO_TABLE =
@@ -64,44 +64,88 @@ public class TasksDatabaseAdapter {
         return this;
     }
 
-    public List<Task> getAllTasks1() {
-        List<Task> contactList = new ArrayList<Task>();
+    public List<Task> getAllTasks() {
+        List<Task> taskList = new ArrayList<Task>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TASKS_TABLE;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Task contact = new Task();
-                contact.setId(Integer.parseInt(cursor.getString(0)));
-                contact.setName(cursor.getString(1));
-                contact.setDescription(cursor.getString(2));
-                // Adding contact to list
-                contactList.add(contact);
-            } while (cursor.moveToNext());
-        }
+        while (cursor.moveToNext()){
+            int id = Integer.parseInt(cursor.getString(0));
+            String name = cursor.getString(1), description = cursor.getString(2);
+            int isCompleted = cursor.getInt(3);
+            boolean completed;
+            if(isCompleted == 1 )
+                completed = true;
+            else
+                completed = false;
 
-        // return contact list
-        return contactList;
+            Task task = new Task(id, name, description, completed);
+            taskList.add(task);
+        }
+        return taskList;
     }
 
     public void close() {
         dbHelper.close();
     }
 
-    public Cursor getAllTasks() {
-        String[] columns = {KEY_ID, KEY_DESCRIPTION, KEY_COMPLETED};
+    public Cursor getAllTasksFromDatabase() {
+        String[] columns = {KEY_ID, KEY_NAME, KEY_DESCRIPTION};
         return db.query(TASKS_TABLE, columns, null, null, null, null, null);
     }
 
     public void insertTask(String name, String description) {
         ContentValues newTaskValues = new ContentValues();
+        open();
         newTaskValues.put(KEY_NAME, name);
         newTaskValues.put(KEY_DESCRIPTION, description);
         db.insert(TASKS_TABLE, null, newTaskValues);
         db.close();
+    }
+
+    public boolean updateTask(Task task) {
+        int id = task.getId();
+        String name = task.getName();
+        String description = task.getDescription();
+        boolean completed = task.isCompleted();
+        return updateTask(id, name, description, completed);
+    }
+
+    public boolean deleteTodo(long id){
+        open();
+        String where = KEY_ID + "=" + id;
+        return db.delete(TASKS_TABLE, where, null) > 0;
+    }
+
+    public boolean updateTask(int id, String name, String description, boolean completed) {
+        String where = KEY_ID + "=" + id;
+        int completedTask = completed ? 1 : 0;
+        ContentValues updateTaskValues = new ContentValues();
+        updateTaskValues.put(KEY_NAME, name);
+        updateTaskValues.put(KEY_DESCRIPTION, description);
+        updateTaskValues.put(KEY_COMPLETED, completedTask);
+        return db.update(TASKS_TABLE, updateTaskValues, where, null) > 0;
+    }
+
+    public Cursor getAllTasksFromDb() {
+        String[] columns = {KEY_ID, KEY_NAME, KEY_DESCRIPTION, KEY_COMPLETED};
+        return db.query(TASKS_TABLE, columns, null, null, null, null, null);
+    }
+
+    public Task getTask(int id) {
+        String[] columns = {KEY_ID, KEY_NAME, KEY_DESCRIPTION, KEY_COMPLETED};
+        String where = KEY_ID + "=" + id;
+        Cursor cursor = db.query(TASKS_TABLE, columns, where, null, null, null, null);
+        Task task = null;
+        if(cursor != null && cursor.moveToFirst()) {
+            String name = cursor.getString(NAME_COLUMN);
+            String description = cursor.getString(DESCRIPTION_COLUMN);
+            boolean completed = cursor.getInt(COMPLETED_COLUMN) > 0 ? true : false;
+            task = new Task(id, name, description, completed);
+        }
+        return task;
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {

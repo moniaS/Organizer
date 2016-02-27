@@ -12,14 +12,18 @@ public class Task {
     String name;
     String description;
     boolean completed;
+    static int maxId;
 
-    public Task() {}
-
-    public Task(int id, String name, String description)
-    {
+    public Task(String name, String description){
         this.name = name;
         this.description = description;
-        completed = false;
+    }
+    public Task(int id, String name, String description, boolean completed)
+    {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.completed = completed;
     }
 
     public String getName() { return name; }

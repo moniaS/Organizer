@@ -14,17 +14,6 @@
         android:focusable="false" >
     </TextView>
 
-    <TextView
-        android:id="@+id/tv_task_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="80dp"
-        android:layout_marginTop="10dp"
-        android:text="descripiton"
-        android:textSize="25px"
-        android:focusable="false">
-    </TextView>
-
     <CheckBox
         android:id="@+id/cb_task_item"
         android:layout_width="wrap_content"

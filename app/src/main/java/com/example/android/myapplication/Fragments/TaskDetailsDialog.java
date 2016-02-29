@@ -79,6 +79,7 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                targetFragment.onFinishDetailsTaskDialog(tv_name.getText().toString(), tv_description.getText().toString());
                 dismiss();
             }
         });

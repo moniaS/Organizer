@@ -74,6 +74,7 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
     public void onFinishDetailsTaskDialog(String name, String description) {
         tasks.get(chosenTaskPosition).setName(name);
         tasks.get(chosenTaskPosition).setDescription(description);
+        Toast.makeText(getContext(), tasks.get(chosenTaskPosition).getName(), Toast.LENGTH_SHORT);
         dbTasksAdapter.updateTask(tasks.get(chosenTaskPosition).getId(),
                                 tasks.get(chosenTaskPosition).getName(),
                                 tasks.get(chosenTaskPosition).getDescription(),

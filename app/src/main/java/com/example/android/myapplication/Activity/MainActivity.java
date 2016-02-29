@@ -13,16 +13,18 @@ import android.widget.Toast;
 
 import com.example.android.myapplication.Fragments.CalendarFragment;
 import com.example.android.myapplication.Fragments.AddTaskDialog;
+import com.example.android.myapplication.Fragments.TaskDetailsDialog;
 import com.example.android.myapplication.Fragments.TasksFragment;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.Adapters.SampleFragmentPagerAdapter;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     SampleFragmentPagerAdapter mPagerAdapter;
     TabLayout mTabLayout;
     ViewPager mViewPager;
-    TasksFragment tasksFragment;
+    Fragment tasksFragment;
+    public TaskDetailsDialog taskDetailsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +74,20 @@ public class MainActivity extends AppCompatActivity{
 
 
 
-    private void showEditDialog() {
-        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+    public void showEditDialog() {
+        tasksFragment = (Fragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         FragmentManager fm = getSupportFragmentManager();
         AddTaskDialog addingTaskDialog = new AddTaskDialog();
         addingTaskDialog.setTargetFragment(tasksFragment, 0 );
         addingTaskDialog.show(fm, "dialog_add_task");
+    }
+
+    public void showTaskDetailsDialog() {
+        tasksFragment = (Fragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        FragmentManager fm = getSupportFragmentManager();
+        taskDetailsDialog = new TaskDetailsDialog();
+        taskDetailsDialog.setTargetFragment(tasksFragment, 0);
+        taskDetailsDialog.show(fm, "dialog_task_details");
     }
 
     private void setToolbar() {

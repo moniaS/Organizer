@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,9 +72,10 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
     }
 
     @Override
-    public void onFinishDetailsTaskDialog(String name, String description) {
+    public void onFinishDetailsTaskDialog(String name, String description, Boolean completed) {
         tasks.get(chosenTaskPosition).setName(name);
         tasks.get(chosenTaskPosition).setDescription(description);
+        tasks.get(chosenTaskPosition).setCompleted(completed);
         Toast.makeText(getContext(), tasks.get(chosenTaskPosition).getName(), Toast.LENGTH_SHORT);
         dbTasksAdapter.updateTask(tasks.get(chosenTaskPosition).getId(),
                                 tasks.get(chosenTaskPosition).getName(),
@@ -85,10 +87,9 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
 
     private void initListView() {
         lv_tasks = (ListView) view.findViewById(R.id.lv_to_do_items);
-        listAdapter = new TasksAdapter(this.getActivity(), tasks);
         dbTasksAdapter = new TasksDatabaseAdapter(getContext());
         tasks = dbTasksAdapter.getAllTasks();
-        listAdapter = new TasksAdapter (this.getActivity(), tasks);
+        listAdapter = new TasksAdapter (this.getActivity(), tasks, this);
         lv_tasks.setAdapter(listAdapter);
         onChosenTaskClickListener();
     }
@@ -114,7 +115,7 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         dbTasksAdapter.updateTask(id, name, description, completed);
     }
 
-    private void updateTaskList() {
+    public void updateTaskList() {
         if(todoCursor != null && todoCursor.moveToFirst()) {
             do {
                 int id = todoCursor.getInt(TasksDatabaseAdapter.ID_COLUMN);
@@ -148,6 +149,22 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         String taskDescription = tasks.get(chosenTaskPosition).getDescription();
         name.setText(taskName);
         description.setText(taskDescription);
+    }
+    public void setCheckbox (CheckBox taskStatus) {
+        Boolean isChecked = tasks.get(chosenTaskPosition).isCompleted();
+        taskStatus.setChecked(isChecked);
+    }
+
+    public void clearCompletedTasks() {
+        if (todoCursor != null) {
+            Log.d("tag", "w clear");
+            while (todoCursor.moveToNext()) {
+                if (todoCursor.getInt(dbTasksAdapter.COMPLETED_COLUMN) == 1) {
+                    int id = todoCursor.getInt(dbTasksAdapter.ID_COLUMN);
+                    dbTasksAdapter.deleteTask(id);
+                }
+            }
+        }
     }
 }
 

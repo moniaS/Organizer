@@ -3,6 +3,7 @@ package com.example.android.myapplication.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.myapplication.Fragments.TasksFragment;
 import com.example.android.myapplication.ObjectClasses.Task;
 import com.example.android.myapplication.R;
 
@@ -25,64 +27,71 @@ import java.util.List;
 public class TasksAdapter extends ArrayAdapter <Task> {
 
     private Activity context;
-    List <Task> tasks;
-    ViewHolder viewHolder;
-    int isSelected;
+    private View rowView;
+    private List <Task> tasks;
+    private ViewHolder viewHolder;
+    private TasksFragment targetFragment;
 
-    public TasksAdapter(Activity context, List<Task> tasks) {
+    public TasksAdapter(Activity context, List<Task> tasks, TasksFragment fragment) {
         super(context, R.layout.list_to_do_item, tasks);
         this.context = context;
         this.tasks = tasks;
+        this.targetFragment = fragment;
     }
 
     static class ViewHolder {
         protected TextView tv_name;
-       // protected TextView tv_descripiton;
         protected CheckBox checkbox;
     }
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View rowView = convertView;
+        rowView = convertView;
         if(rowView == null) {
             LayoutInflater layoutInflater = context.getLayoutInflater();
             rowView = layoutInflater.inflate(R.layout.list_to_do_item, null, true);
-            viewHolder = new ViewHolder();
-            viewHolder.tv_name = (TextView) rowView.findViewById(R.id.tv_task_name);
-          //  viewHolder.tv_descripiton = (TextView) rowView.findViewById(R.id.tv_task_description);
-            viewHolder.checkbox = (CheckBox) rowView.findViewById(R.id.cb_task_item);
-            rowView.setTag(viewHolder);
-        } else {
+            createViewHolder();
+        }
+        else {
             viewHolder = (ViewHolder) rowView.getTag();
         }
-        final Task task = tasks.get(position);
-        viewHolder.tv_name.setText(task.getName());
-      //  viewHolder.tv_descripiton.setText(task.getDescription());
-        if(task.isCompleted())
+        setViewHolder(position);
+        return rowView;
+    }
+
+    private void createViewHolder() {
+        viewHolder = new ViewHolder();
+        viewHolder.tv_name = (TextView) rowView.findViewById(R.id.tv_task_name);
+        viewHolder.checkbox = (CheckBox) rowView.findViewById(R.id.cb_task_item);
+        rowView.setTag(viewHolder);
+    }
+    private void setViewHolder(int position) {
+        viewHolder.tv_name.setText(tasks.get(position).getName());
+        setViewHolderCheckbox(position);
+    }
+
+    private void setViewHolderCheckbox(int position) {
+        if(tasks.get(position).isCompleted())
             viewHolder.checkbox.setChecked(true);
         else
             viewHolder.checkbox.setChecked(false);
+        setViewHolderCheckboxListener(position);
+    }
 
+    private void setViewHolderCheckboxListener (final int position) {
         viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    task.setCompleted(true);
+                    tasks.get(position).setCompleted(true);
                 }
                 else {
-                    task.setCompleted(false);                }
+                    tasks.get(position).setCompleted(false);
                 }
-        });
-        return rowView;
-    }
-    @Override
-    public boolean areAllItemsEnabled(){
-        return true;
-    }
 
-    @Override
-    public boolean isEnabled(int arg0){
-        return true;
+                targetFragment.updateTask(tasks.get(position));
+            }
+        });
     }
 }
 

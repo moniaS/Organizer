@@ -12,7 +12,6 @@ import com.example.android.myapplication.Fragments.TasksFragment;
 public class SampleFragmentPagerAdapter extends FragmentStatePagerAdapter {
     final int PAGE_COUNT = 3;
     private String tabTitles[] = new String[] { "To Do", "Calendar", "Notes" };
-    Fragment mCurrentFragment;
     private TasksFragment taskFragment;
     private CalendarFragment calendarFragment;
     private NotesFragment notesFragment;

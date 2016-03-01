@@ -24,7 +24,6 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
     private View view;
     private EditText taskName;
     private EditText taskDescription;
-    private CheckBox taskChecked;
     private Button btnSaveTask;
     private Button btnCancelTask;
     private TasksFragment targetFragment;
@@ -36,7 +35,6 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             // Return input text to activity
-            MainActivity activity = (MainActivity) getActivity();
             targetFragment.onFinishEditDialog(taskName.getText().toString(), taskDescription.getText().toString());
             this.dismiss();
             return true;
@@ -44,9 +42,7 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
         return false;
     }
 
-    public AddTaskDialog() {
-        // Empty constructor required for DialogFragment
-    }
+    public AddTaskDialog() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,5 +87,4 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
-
 }

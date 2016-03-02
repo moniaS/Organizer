@@ -4,10 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -27,6 +30,7 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
     private Button btnSaveTask;
     private Button btnCancelTask;
     private TasksFragment targetFragment;
+    private Toolbar toolbar;
 
     public interface NewTaskFragmentListener {
         void onFinishEditDialog(String name, String description);
@@ -48,15 +52,23 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.dialog_add_task, container);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        setToolbar();
         addEditTexts();
         addButtons();
-        getDialog().setTitle("Task Adding");
+
         showKeyboard(taskName);
         //taskDescription.setOnEditorActionListener(this);
 
         return view;
     }
 
+    private void setToolbar () {
+        toolbar = (Toolbar) view.findViewById(R.id.task_adding_toolbar);
+        toolbar.inflateMenu(R.menu.menu_task_adding);
+        toolbar.setTitle("Task Adding");
+        toolbar.setNavigationIcon(R.mipmap.icon_back1);
+    }
     private void addEditTexts() {
         taskName = (EditText) view.findViewById(R.id.txt_new_task_name);
         taskDescription = (EditText) view.findViewById(R.id.txt_new_task_description);

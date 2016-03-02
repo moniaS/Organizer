@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setLogo(R.mipmap.icon_logo);
+        getSupportActionBar().setLogo(R.mipmap.icon_app);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 

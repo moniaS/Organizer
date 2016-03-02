@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item
         android:id="@+id/action_add"
-        android:icon="@mipmap/icon_add"
+        android:icon="@mipmap/icon_add1"
         android:title="@string/action_search"
         app:showAsAction="always"/>
 

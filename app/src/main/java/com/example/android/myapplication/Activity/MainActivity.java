@@ -24,25 +24,24 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private TasksFragment tasksFragment;
+    private CalendarFragment calendarFragment;
     private TaskDetailsDialog taskDetailsDialog;
+    private AddTaskDialog addTaskDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setToolbar();
-        initViews();
+        initUserInterface();
     }
 
     @Override
     public void onAttachFragment(Fragment fragment) {
-        // TODO Auto-generated method stub
         super.onAttachFragment(fragment);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -50,53 +49,89 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-
             case R.id.action_add:
-                if(mViewPager.getCurrentItem() == 0) {
-                    TasksFragment taskFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-                    showEditDialog();
-                }
-                else if(mViewPager.getCurrentItem() == 1) {
-                    CalendarFragment calendarFragment = (CalendarFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-                    Toast.makeText(this, "Adding selected", Toast.LENGTH_SHORT)
-                            .show();
-                }
+                setOnAddActionListener();
                 return true;
             case R.id.action_settings:
-                Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT)
-                        .show();
                 return true;
             case R.id.action_clear_tasks:
-                tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-                Toast.makeText(this, "Clearing selected", Toast.LENGTH_SHORT)
-                        .show();
-                tasksFragment.clearCompletedTasks();
-            return true;
+                setOnClearTasksOptionListenerForTasksFragment();
+                return true;
             default:
                 break;
         }
         return false;
     }
 
-    public void showEditDialog() {
-        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-        FragmentManager fm = getSupportFragmentManager();
-        AddTaskDialog addingTaskDialog = new AddTaskDialog();
-        addingTaskDialog.setTargetFragment(tasksFragment, 0 );
-        addingTaskDialog.show(fm, "dialog_add_task");
+    private void initUserInterface () {
+        initToolbar();
+        initViews();
+    }
+    private void setOnAddActionListener () {
+        if(mViewPager.getCurrentItem() == 0) {
+            setOnAddActionListenerForTasksFragment();
+        }
+        else if(mViewPager.getCurrentItem() == 1) {
+            setOnAddActionListenerForCalendarFragment();
+        }
     }
 
-    public void showTaskDetailsDialog() {
+    private void setOnAddActionListenerForTasksFragment () {
+        TasksFragment tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        initAddTaskDialog();
+    }
+
+    private void setOnAddActionListenerForCalendarFragment () {
+        calendarFragment = (CalendarFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        Toast.makeText(this, "Adding selected", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void setOnClearTasksOptionListenerForTasksFragment () {
         tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        tasksFragment.clearCompletedTasks();
+    }
+
+    private void initAddTaskDialog () {
+        createAddTaskDialog();
+        showAddTaskDialog();
+    }
+
+    private void createAddTaskDialog () {
+        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        addTaskDialog = new AddTaskDialog();
+        addTaskDialog.setTargetFragment(tasksFragment, 0);
+    }
+
+    private void showAddTaskDialog () {
         FragmentManager fm = getSupportFragmentManager();
+        addTaskDialog.show(fm, "dialog_add_task");
+    }
+
+    public void initTaskDetailsDialog () {
+        createDetailsTaskDialog();
+        showDetailsTaskDialog();}
+
+    private void createDetailsTaskDialog () {
+        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         taskDetailsDialog = new TaskDetailsDialog();
         taskDetailsDialog.setTargetFragment(tasksFragment, 0);
-        taskDetailsDialog.show(fm, "dialog_task_details");
     }
 
-    private void setToolbar() {
+    private void showDetailsTaskDialog () {
+        FragmentManager fm = getSupportFragmentManager();
+        taskDetailsDialog.show(fm, "dialog_task_details");
+    }
+    private void initToolbar () {
+        createToolbar();
+        setToolbarOptions();
+    }
+    private void createToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+    }
+
+    private void setToolbarOptions () {
         getSupportActionBar().setLogo(R.mipmap.icon_app);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
@@ -105,9 +140,7 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new SampleFragmentPagerAdapter(getSupportFragmentManager());
-
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-
     }
 }

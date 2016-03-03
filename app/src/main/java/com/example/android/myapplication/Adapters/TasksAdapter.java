@@ -48,9 +48,7 @@ public class TasksAdapter extends ArrayAdapter <Task> {
 
         rowView = convertView;
         if(rowView == null) {
-            LayoutInflater layoutInflater = context.getLayoutInflater();
-            rowView = layoutInflater.inflate(R.layout.list_to_do_item, null, true);
-            createViewHolder();
+            initRowView();
         }
         else {
             viewHolder = (ViewHolder) rowView.getTag();
@@ -59,36 +57,44 @@ public class TasksAdapter extends ArrayAdapter <Task> {
         return rowView;
     }
 
+    private void initRowView () {
+        LayoutInflater layoutInflater = context.getLayoutInflater();
+        rowView = layoutInflater.inflate(R.layout.list_to_do_item, null, true);
+        createViewHolder();
+    }
     private void createViewHolder() {
         viewHolder = new ViewHolder();
-        viewHolder.tv_name = (TextView) rowView.findViewById(R.id.tv_task_name);
-        viewHolder.checkbox = (CheckBox) rowView.findViewById(R.id.cb_task_item);
+        initViewHolderItems();
         rowView.setTag(viewHolder);
     }
+
+    private void initViewHolderItems () {
+        viewHolder.tv_name = (TextView) rowView.findViewById(R.id.tv_task_name);
+        viewHolder.checkbox = (CheckBox) rowView.findViewById(R.id.cb_task_item);
+    }
+
     private void setViewHolder(int position) {
         viewHolder.tv_name.setText(tasks.get(position).getName());
         setViewHolderCheckbox(position);
     }
 
     private void setViewHolderCheckbox(int position) {
+        checkViewHolderCheckbox(position);
+        setViewHolderCheckboxListener(position);
+    }
+
+    private void checkViewHolderCheckbox (int position){
         if(tasks.get(position).isCompleted())
             viewHolder.checkbox.setChecked(true);
         else
             viewHolder.checkbox.setChecked(false);
-        setViewHolderCheckboxListener(position);
     }
 
     private void setViewHolderCheckboxListener (final int position) {
         viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    tasks.get(position).setCompleted(true);
-                }
-                else {
-                    tasks.get(position).setCompleted(false);
-                }
-
+                tasks.get(position).setCompleted(isChecked);
                 targetFragment.updateTask(tasks.get(position));
             }
         });

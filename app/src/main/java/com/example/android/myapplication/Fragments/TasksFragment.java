@@ -1,13 +1,7 @@
 package com.example.android.myapplication.Fragments;
 
-import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,11 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.myapplication.Activity.MainActivity;
 import com.example.android.myapplication.Adapters.TasksAdapter;
@@ -67,22 +59,21 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
     }
 
     @Override
-    public void onFinishEditDialog(String name, String description) {
+    public void onFinishAddTaskDialog(String name, String description) {
         this.addTaskToList(name, description);
     }
 
-    @Override
-    public void onFinishDetailsTaskDialog(String name, String description, Boolean completed) {
-        tasks.get(chosenTaskPosition).setName(name);
-        tasks.get(chosenTaskPosition).setDescription(description);
-        tasks.get(chosenTaskPosition).setCompleted(completed);
-        Toast.makeText(getContext(), tasks.get(chosenTaskPosition).getName(), Toast.LENGTH_SHORT);
+    private void updateTaskValues (Task task){
+        tasks.get(chosenTaskPosition).setName(task.getName());
+        tasks.get(chosenTaskPosition).setDescription(task.getDescription());
+        tasks.get(chosenTaskPosition).setCompleted(task.isCompleted());
+    }
+
+    private void updateTaskInDbAdapter () {
         dbTasksAdapter.updateTask(tasks.get(chosenTaskPosition).getId(),
-                                tasks.get(chosenTaskPosition).getName(),
-                                tasks.get(chosenTaskPosition).getDescription(),
-                                tasks.get(chosenTaskPosition).isCompleted());
-        updateTaskList();
-        listAdapter.notifyDataSetChanged();
+                tasks.get(chosenTaskPosition).getName(),
+                tasks.get(chosenTaskPosition).getDescription(),
+                tasks.get(chosenTaskPosition).isCompleted());
     }
 
     private void initListView() {
@@ -94,15 +85,12 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         onChosenTaskClickListener();
     }
 
-
     private void onChosenTaskClickListener(){
         lv_tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                Toast.makeText(getContext(), "Clicked", Toast.LENGTH_LONG).show();
                 chosenTaskPosition = position;
-                activity.showTaskDetailsDialog();
-                // createAlertDialog();
+                activity.initTaskDetailsDialog();
             }
         });
     }
@@ -150,6 +138,7 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         name.setText(taskName);
         description.setText(taskDescription);
     }
+
     public void setCheckbox (CheckBox taskStatus) {
         Boolean isChecked = tasks.get(chosenTaskPosition).isCompleted();
         taskStatus.setChecked(isChecked);
@@ -165,6 +154,17 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
                 }
             }
         }
+    }
+
+    @Override
+    public void onFinishDetailsTaskDialog(String name, String description, boolean completed) {
+
+        Task task = new Task(name, description, completed);
+        updateTaskValues(task);
+        updateTaskInDbAdapter();
+        updateTaskList();
+        listAdapter.notifyDataSetChanged();
+
     }
 }
 

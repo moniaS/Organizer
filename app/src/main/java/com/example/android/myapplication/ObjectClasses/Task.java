@@ -18,6 +18,12 @@ public class Task {
         this.name = name;
         this.description = description;
     }
+
+    public Task(String name, String description, boolean isCompleted){
+        this.name = name;
+        this.description = description;
+        this.completed = isCompleted;
+    }
     public Task(int id, String name, String description, boolean completed)
     {
         this.id = id;
@@ -41,8 +47,6 @@ public class Task {
     }
 
     public void setDescription(String description) { this.description = description; }
-
-    public void setId(int id) { this.id = id; }
 
     public boolean isCompleted() {
         return completed;

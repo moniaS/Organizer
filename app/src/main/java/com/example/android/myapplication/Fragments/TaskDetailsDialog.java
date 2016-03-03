@@ -1,11 +1,9 @@
 package com.example.android.myapplication.Fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.example.android.myapplication.Activity.MainActivity;
@@ -43,55 +38,100 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
     View view;
 
     public interface DetailsTaskFragmentListener{
-        void onFinishDetailsTaskDialog(String name, String description, Boolean completed);
+        void onFinishDetailsTaskDialog(String name, String description, boolean completed);
     }
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_DONE == actionId) {
-            // Return input text to activity
             MainActivity activity = (MainActivity) getActivity();
-            targetFragment.onFinishDetailsTaskDialog(tv_name.getText().toString(), tv_description.getText().toString(), cb_taskStatus.isChecked());
-            this.dismiss();
+            closeDialog();
             return true;
         }
         return false;
+    }
+
+    private void closeDialog () {
+        String name = tv_name.getText().toString();
+        String description = tv_description.getText().toString();
+        boolean isChecked = cb_taskStatus.isChecked();
+        targetFragment.onFinishDetailsTaskDialog(name, description, isChecked);
+        this.dismiss();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_task_details_dialog, container);
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        setToolbar();
-        initViewSwitcher();
-        targetFragment = (TasksFragment) getTargetFragment();
-        //setDialogTitle("@string/details_dialog_title");
-        setUserInterace();
+        setNoTitleForDialog();
+        initUserInterface();
         return view;
     }
 
-    private void setToolbar () {
+    private void setTargetFragmentForDialog () {
+        targetFragment = (TasksFragment) getTargetFragment();
+    }
+
+    private void setNoTitleForDialog () {
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+    }
+
+    private void initUserInterface () {
+        initToolbar();
+        setTargetFragmentForDialog();
+        setTextViews();
+        setEditViews();
+        setCheckbox();
+        initViewSwitcher();
+        setButtonsWhileEditing();
+    }
+
+    private void initToolbar () {
+        createToolbar();
+        setToolbarOptions();
+        addOnToolbarMenuOptionsListener();
+    }
+
+    private void createToolbar () {
         toolbar = (Toolbar) view.findViewById(R.id.task_details_toolbar);
+        toolbar.inflateMenu(R.menu.menu_task_details);
+    }
+    private void addOnToolbarMenuOptionsListener () {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case (R.id.action_edit):
-                        setViewSwitcher();
-                        showKeyboardForEdittext();
-                        changeDialogViewToEditTaskView();
+                        addOnEditOptionListener();
                         break;
                     case (R.id.action_delete):
-                        targetFragment.deleteTask();
-                        dismiss();
+                        addOnDeleteOptionListener();
                         break;
                 }
                 return false;
             }
         });
-        toolbar.inflateMenu(R.menu.menu_task_details);
-        toolbar.setTitle("Task Details");
+    }
+    private void addOnEditOptionListener () {
+        setViewSwitcher();
+        showKeyboardForEdittext();
+        changeDialogViewToEditTaskView();
+    }
+
+    private void addOnDeleteOptionListener () {
+        targetFragment.deleteTask();
+        dismiss();
+    }
+
+    private void setToolbarOptions () {
+        toolbar.setTitle(R.string.title_TaskDetailsDialog);
+        setToolbarNavigationIcon();
+    }
+
+    private void setToolbarNavigationIcon () {
         toolbar.setNavigationIcon(R.mipmap.icon_back1);
+        setToolbarNavigationIconListener();
+    }
+    private void setToolbarNavigationIconListener () {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,12 +142,12 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
                     dismiss();
                 }
             }
-        });
-    }
+        });}
 
     private void setButtonsWhileEditing () {
         setSaveButton();
         setCancelButton();
+        setButtonsVisibility(View.GONE);
     }
 
     private void setSaveButton () {
@@ -138,23 +178,23 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
         });
     }
     private void changeDialogViewAfterCancel () {
-        btn_saveChanges.setVisibility(View.GONE);
-        btn_cancel.setVisibility(View.GONE);
-        toolbar.getMenu().setGroupVisible(R.id.group_menu, true);
+        setButtonsVisibility(View.GONE);
+        setToolbarMenuOptionsVisibility(true);
         changeSwitcherViews();
         changeCheckboxClickableStatus(false);
+    }
 
+    private void setButtonsVisibility (int isVisible) {
+        btn_saveChanges.setVisibility(isVisible);
+        btn_cancel.setVisibility(isVisible);
+    }
+
+    private void setToolbarMenuOptionsVisibility (boolean isVisible) {
+        toolbar.getMenu().setGroupVisible(R.id.group_menu, isVisible);
     }
     private void initViewSwitcher () {
         viewSwitcherName = (ViewSwitcher) view.findViewById(R.id.vs_name);
         viewSwitcherDescription = (ViewSwitcher) view.findViewById(R.id.vs_description);
-    }
-
-    private void setUserInterace () {
-        setTextViews();
-        setEditViews();
-        setCheckbox();
-        setButtonsWhileEditing();
     }
 
     private void setViewSwitcher () {
@@ -172,15 +212,12 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
         changeDialogToolbarWhileEdit();
         changeSwitcherViews();
         changeCheckboxClickableStatus(true);
+        setButtonsVisibility(View.VISIBLE);
     }
 
     private void changeDialogToolbarWhileEdit() {
-        toolbar.getMenu().setGroupVisible(R.id.group_menu, false);
-
+        setToolbarMenuOptionsVisibility(false);
         setButtonsWhileEditing();
-        btn_saveChanges.setVisibility(View.VISIBLE);
-        btn_cancel.setVisibility(View.VISIBLE);
-
     }
     private void showKeyboard(EditText name) {
         name.requestFocus();
@@ -193,9 +230,8 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
     }
 
     private void changeDialogViewAfterEdit() {
-        btn_saveChanges.setVisibility(View.GONE);
-        btn_cancel.setVisibility(View.GONE);
-        toolbar.getMenu().setGroupVisible(R.id.group_menu, true);
+        setButtonsVisibility(View.GONE);
+        setToolbarMenuOptionsVisibility(true);
         changeSwitcherViews();
         setTaskValuesAfterEditing();
         changeCheckboxClickableStatus(false);
@@ -213,6 +249,7 @@ public class TaskDetailsDialog extends android.support.v4.app.DialogFragment imp
     }
 
     private void setTextViews() {
+        setTargetFragmentForDialog();
         tv_name = (TextView) view.findViewById(R.id.tv_edit_name);
         tv_description = (TextView) view.findViewById(R.id.tv_edit_description);
         tv_status = (TextView) view.findViewById(R.id.tv_edit_status);

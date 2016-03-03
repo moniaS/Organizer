@@ -7,9 +7,9 @@
         android:id="@+id/tv_task_name"
         android:layout_width="270dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:textSize="25px"
+        android:layout_marginLeft="@dimen/margin"
+        android:layout_marginTop="@dimen/margin"
+        android:textSize="@dimen/mediumTextSize"
         android:focusable="false" >
     </TextView>
 
@@ -19,8 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="4px"
-        android:layout_marginRight="10px"
+        android:layout_marginRight="@dimen/margin"
         android:focusable="false" >
     </CheckBox>
 

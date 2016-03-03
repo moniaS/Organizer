@@ -12,7 +12,7 @@
         android:id="@+id/task_adding_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="Task Adding"
+        android:title="@string/title_AddTaskDialog"
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
@@ -21,38 +21,38 @@
 
     <TextView
         android:id="@+id/tv_new_task_name"
-        android:text="Name:"
+        android:text="@string/taskName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:textSize="14dp" />
+        android:layout_marginLeft="@dimen/margin"
+        android:textSize="@dimen/smallTextSize" />
 
     <EditText
         android:id="@+id/txt_new_task_name"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:inputType="text|textMultiLine|textCapSentences"
-        android:textSize="16dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        android:inputType="text|textMultiLine"
+        android:textSize="@dimen/mediumTextSize"
+        android:layout_marginLeft="@dimen/margin"
+        android:layout_marginRight="@dimen/margin"/>
 
     <TextView
         android:id="@+id/tv_new_task_description"
-        android:text="Description:"
-        android:textSize="14dp"
+        android:text="@string/taskDescription"
+        android:textSize="@dimen/smallTextSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp" />
+        android:layout_marginLeft="@dimen/margin" />
 
     <EditText
         android:id="@+id/txt_new_task_description"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:inputType="text|textMultiLine|textCapSentences"
-        android:textSize="16dp"
+        android:inputType="text|textMultiLine"
+        android:textSize="@dimen/mediumTextSize"
         android:layout_gravity="left|top"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        android:layout_marginLeft="@dimen/margin"
+        android:layout_marginRight="@dimen/margin"/>
 
     <GridLayout
         android:layout_width="match_parent"
@@ -64,22 +64,22 @@
             android:layout_height="wrap_content"
             android:textColorHighlight="@color/buttonHighlightColor"
             android:textColorHint="#000000"
-            android:text="SAVE"
+            android:text="@string/btn_save"
             android:layout_gravity="right"
             android:textColor="@color/textColor"
-            android:textSize="14dp"
+            android:textSize="@dimen/smallTextSize"
             android:visibility="visible" />
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="@dimen/margin"
             android:textColorHighlight="@color/buttonHighlightColor"
-            android:text="CANCEL"
+            android:text="@string/btn_cancel"
             android:layout_toRightOf="@id/btn_saveTask"
             android:textColor="@color/textColor"
-            android:textSize="14dp"
+            android:textSize="@dimen/smallTextSize"
             android:visibility="visible"/>
 
     </GridLayout>

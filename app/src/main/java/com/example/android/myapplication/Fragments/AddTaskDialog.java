@@ -33,13 +33,13 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
     private Toolbar toolbar;
 
     public interface NewTaskFragmentListener {
-        void onFinishEditDialog(String name, String description);
+        void onFinishAddTaskDialog(String name, String description);
     }
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             // Return input text to activity
-            targetFragment.onFinishEditDialog(taskName.getText().toString(), taskDescription.getText().toString());
+            targetFragment.onFinishAddTaskDialog(taskName.getText().toString(), taskDescription.getText().toString());
             this.dismiss();
             return true;
         }
@@ -53,40 +53,59 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.dialog_add_task, container);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        setToolbar();
-        addEditTexts();
-        addButtons();
-
-        showKeyboard(taskName);
-        //taskDescription.setOnEditorActionListener(this);
-
+        initUserInterface();
         return view;
     }
 
-    private void setToolbar () {
+    private void  initUserInterface () {
+        initToolbar();
+        initEditTexts();
+        initButtons();
+        showKeyboard(taskName);
+    }
+
+    private void initToolbar () {
+        createToolbar();
+        setToolbarOptions();
+    }
+
+    private void createToolbar () {
         toolbar = (Toolbar) view.findViewById(R.id.task_adding_toolbar);
+    }
+
+    private void setToolbarOptions () {
         toolbar.inflateMenu(R.menu.menu_task_adding);
-        toolbar.setTitle("Task Adding");
+        toolbar.setTitle(R.string.title_AddTaskDialog);
         toolbar.setNavigationIcon(R.mipmap.icon_back1);
     }
-    private void addEditTexts() {
+    private void initEditTexts() {
         taskName = (EditText) view.findViewById(R.id.txt_new_task_name);
         taskDescription = (EditText) view.findViewById(R.id.txt_new_task_description);
     }
 
-    private  void addButtons(){
-        btnSaveTask = (Button) view.findViewById(R.id.btn_saveTask);
-        btnCancelTask = (Button) view.findViewById(R.id.btn_cancel);
+    private void initButtons () {
+        initSaveButton();
+        initCancelButton();
+    }
 
+    private void initSaveButton () {
+        btnSaveTask = (Button) view.findViewById(R.id.btn_saveTask);
+        setSaveButtonOnClickListener();
+    }
+
+    private void setSaveButtonOnClickListener () {
         btnSaveTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 targetFragment = (TasksFragment) getTargetFragment();
-                targetFragment.onFinishEditDialog(taskName.getText().toString(), taskDescription.getText().toString());
+                targetFragment.onFinishAddTaskDialog(taskName.getText().toString(), taskDescription.getText().toString());
                 dismiss();
             }
         });
+    }
 
+    private void initCancelButton () {
+        btnCancelTask = (Button) view.findViewById(R.id.btn_cancel);
         btnCancelTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,6 +113,7 @@ public class AddTaskDialog extends android.support.v4.app.DialogFragment impleme
             }
         });
     }
+
     private void showKeyboard(EditText editText) {
         editText.requestFocus();
         getDialog().getWindow().setSoftInputMode(

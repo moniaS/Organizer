@@ -51,7 +51,7 @@ public class SampleFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 mCurrentPrimaryItem.setUserVisibleHint(false);
             }
             if (fragment != null) {
-// There's no check to see if a parent fragment is even visible!
+                // There's no check to see if a parent fragment is even visible!
                 fragment.setMenuVisibility(true);
                 fragment.setUserVisibleHint(true);
             }
@@ -77,7 +77,7 @@ public class SampleFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case 2:
                 notesFragment = (NotesFragment) createdFragment;
-                        break;
+                break;
         }
         return createdFragment;
     }

@@ -9,23 +9,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.myapplication.Fragments.CalendarFragment;
 import com.example.android.myapplication.Fragments.AddTaskDialog;
 import com.example.android.myapplication.Fragments.TaskDetailsDialog;
 import com.example.android.myapplication.Fragments.TasksFragment;
+import com.example.android.myapplication.Interfaces.NewEditDialogListener;
+import com.example.android.myapplication.ObjectClasses.Task;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.Adapters.SampleFragmentPagerAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewEditDialogListener {
 
     private SampleFragmentPagerAdapter mPagerAdapter;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    private TasksFragment tasksFragment;
-    private CalendarFragment calendarFragment;
-    private TaskDetailsDialog taskDetailsDialog;
     private AddTaskDialog addTaskDialog;
 
     @Override
@@ -82,13 +84,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setOnAddActionListenerForCalendarFragment () {
-        calendarFragment = (CalendarFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        CalendarFragment calendarFragment = (CalendarFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         Toast.makeText(this, "Adding selected", Toast.LENGTH_SHORT)
                 .show();
     }
 
     private void setOnClearTasksOptionListenerForTasksFragment () {
-        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        TasksFragment tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         tasksFragment.clearCompletedTasks();
     }
 
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createAddTaskDialog () {
-        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        TasksFragment tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
         addTaskDialog = new AddTaskDialog();
         addTaskDialog.setTargetFragment(tasksFragment, 0);
     }
@@ -108,20 +110,6 @@ public class MainActivity extends AppCompatActivity {
         addTaskDialog.show(fm, "dialog_add_task");
     }
 
-    public void initTaskDetailsDialog () {
-        createDetailsTaskDialog();
-        showDetailsTaskDialog();}
-
-    private void createDetailsTaskDialog () {
-        tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-        taskDetailsDialog = new TaskDetailsDialog();
-        taskDetailsDialog.setTargetFragment(tasksFragment, 0);
-    }
-
-    private void showDetailsTaskDialog () {
-        FragmentManager fm = getSupportFragmentManager();
-        taskDetailsDialog.show(fm, "dialog_task_details");
-    }
     private void initToolbar () {
         createToolbar();
         setToolbarOptions();
@@ -142,5 +130,14 @@ public class MainActivity extends AppCompatActivity {
         mPagerAdapter = new SampleFragmentPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+    }
+
+    @Override
+    public void onInitEditDialog(Task task) {
+        TasksFragment tasksFragment = (TasksFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+        TaskDetailsDialog taskDetailsDialog = new TaskDetailsDialog();
+        taskDetailsDialog.setTargetFragment(tasksFragment, 0);
+        FragmentManager fm = getSupportFragmentManager();
+        taskDetailsDialog.show(fm, "dialog_task_details");
     }
 }

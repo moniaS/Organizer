@@ -31,10 +31,11 @@
         android:id="@+id/txt_new_task_name"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:inputType="text|textMultiLine"
+        android:inputType="text|textImeMultiLine"
         android:textSize="@dimen/mediumTextSize"
         android:layout_marginLeft="@dimen/margin"
-        android:layout_marginRight="@dimen/margin"/>
+        android:layout_marginRight="@dimen/margin"
+        android:imeOptions="actionNext" />
 
     <TextView
         android:id="@+id/tv_new_task_description"
@@ -48,11 +49,41 @@
         android:id="@+id/txt_new_task_description"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:inputType="text|textMultiLine"
+        android:inputType="text|textImeMultiLine"
         android:textSize="@dimen/mediumTextSize"
         android:layout_gravity="left|top"
         android:layout_marginLeft="@dimen/margin"
-        android:layout_marginRight="@dimen/margin"/>
+        android:layout_marginRight="@dimen/margin"
+        android:imeOptions="actionDone" />
+
+    <TextView
+        android:id="@+id/tv_new_task_date"
+        android:text="Finish date: "
+        android:textSize="@dimen/smallTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_chosen_new_task_date"
+        android:textSize="@dimen/smallTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin"
+        android:visibility="gone"/>
+
+    <DatePicker
+        android:id="@+id/dp_taskDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"></DatePicker>
+
+    <Button
+        android:id="@+id/btn_addDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD DATE"/>
 
     <GridLayout
         android:layout_width="match_parent"

@@ -1,7 +1,9 @@
 package com.example.android.myapplication.Fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,15 +18,17 @@ import android.widget.TextView;
 
 import com.example.android.myapplication.Activity.MainActivity;
 import com.example.android.myapplication.Adapters.TasksAdapter;
+import com.example.android.myapplication.Interfaces.MyEditTaskListener;
+import com.example.android.myapplication.Interfaces.MyNewTaskListener;
+import com.example.android.myapplication.Interfaces.NewEditDialogListener;
+import com.example.android.myapplication.Interfaces.OnChosenTaskPositionListener;
 import com.example.android.myapplication.R;
 import com.example.android.myapplication.ObjectClasses.Task;
-import com.example.android.myapplication.TasksDatabaseAdapter;
+import com.example.android.myapplication.Adapters.TasksDatabaseAdapter;
 
 import java.util.List;
-public class TasksFragment extends android.support.v4.app.Fragment implements AddTaskDialog.NewTaskFragmentListener, TaskDetailsDialog.DetailsTaskFragmentListener {
+public class TasksFragment extends android.support.v4.app.Fragment implements MyNewTaskListener, MyEditTaskListener{
 
-    View view;
-    private MainActivity activity;
     private ListView lv_tasks;
     private TasksDatabaseAdapter dbTasksAdapter;
     private Cursor todoCursor;
@@ -32,18 +36,18 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
     private TasksAdapter listAdapter;
     android.support.v4.app.FragmentManager fm = getFragmentManager();
     private int chosenTaskPosition;
+    private NewEditDialogListener mNewEditDialogListener;
+    private OnChosenTaskPositionListener mOnChosenPositionListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_to_do, container, false);
-        activity = (MainActivity) getActivity();
-        initListView();
+        View view = inflater.inflate(R.layout.fragment_to_do, container, false);
+        initListView(view);
         return view;
     }
 
@@ -52,15 +56,16 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         super.onSaveInstanceState(outState);
         setUserVisibleHint(true);
     }
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mNewEditDialogListener = (NewEditDialogListener) context;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onFinishAddTaskDialog(String name, String description) {
-        this.addTaskToList(name, description);
     }
 
     private void updateTaskValues (Task task){
@@ -76,7 +81,7 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
                 tasks.get(chosenTaskPosition).isCompleted());
     }
 
-    private void initListView() {
+    private void initListView(View view) {
         lv_tasks = (ListView) view.findViewById(R.id.lv_to_do_items);
         dbTasksAdapter = new TasksDatabaseAdapter(getContext());
         tasks = dbTasksAdapter.getAllTasks();
@@ -90,10 +95,11 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 chosenTaskPosition = position;
-                activity.initTaskDetailsDialog();
+                mNewEditDialogListener.onInitEditDialog(tasks.get(chosenTaskPosition));
             }
         });
     }
+
 
     public void updateTask(Task task) {
         int id = task.getId();
@@ -112,6 +118,7 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
                 tasks.add(new Task(id, name, description, false));
             } while(todoCursor.moveToNext());
         }
+        listAdapter.notifyDataSetChanged();
     }
 
     public void addTaskToList(String name, String description) {
@@ -120,51 +127,75 @@ public class TasksFragment extends android.support.v4.app.Fragment implements Ad
         listAdapter.notifyDataSetChanged();
     }
 
-    public void deleteTask() {
-        dbTasksAdapter.deleteTask(tasks.get(chosenTaskPosition).getId());
-        listAdapter.remove(tasks.get(chosenTaskPosition));
-    }
 
-    public void setTextViews(TextView name, TextView description) {
-        String taskName = tasks.get(chosenTaskPosition).getName();
-        String taskDescription = tasks.get(chosenTaskPosition).getDescription();
-        name.setText(taskName);
-        description.setText(taskDescription);
-    }
-
-    public void setEditTexts(EditText name, EditText description) {
-        String taskName = tasks.get(chosenTaskPosition).getName();
-        String taskDescription = tasks.get(chosenTaskPosition).getDescription();
-        name.setText(taskName);
-        description.setText(taskDescription);
-    }
-
-    public void setCheckbox (CheckBox taskStatus) {
-        Boolean isChecked = tasks.get(chosenTaskPosition).isCompleted();
-        taskStatus.setChecked(isChecked);
-    }
 
     public void clearCompletedTasks() {
+        todoCursor = dbTasksAdapter.getDatabase().rawQuery( "select * from tasks", null );
         if (todoCursor != null) {
             Log.d("tag", "w clear");
             while (todoCursor.moveToNext()) {
                 if (todoCursor.getInt(dbTasksAdapter.COMPLETED_COLUMN) == 1) {
-                    int id = todoCursor.getInt(dbTasksAdapter.ID_COLUMN);
-                    dbTasksAdapter.deleteTask(id);
+                    updateTaskList();
                 }
             }
         }
+        else
+            Log.d("tag2", "nie w clear");
     }
 
     @Override
-    public void onFinishDetailsTaskDialog(String name, String description, boolean completed) {
+    public void onNewTask(String name, String description) {
+        addTaskToList(name, description);
+    }
 
+    @Override
+    public void onEditTask(String name, String description, boolean completed) {
         Task task = new Task(name, description, completed);
         updateTaskValues(task);
         updateTaskInDbAdapter();
         updateTaskList();
         listAdapter.notifyDataSetChanged();
+    }
 
+    private void deleteTask(int id) {
+        dbTasksAdapter.deleteTask(id);
+        int mId = todoCursor.getInt(TasksDatabaseAdapter.ID_COLUMN);
+        String name = todoCursor.getString(TasksDatabaseAdapter.NAME_COLUMN);
+        String description = todoCursor.getString(TasksDatabaseAdapter.DESCRIPTION_COLUMN);
+
+        Task task = new Task(id, name, description, true);
+        listAdapter.remove(task);
+        listAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public void onDeleteTask() {
+        dbTasksAdapter.deleteTask(tasks.get(chosenTaskPosition).getId());
+        listAdapter.remove(tasks.get(chosenTaskPosition));
+    }
+
+    @Override
+    public void setTextViews(TextView name, TextView description) {
+        String taskName = tasks.get(chosenTaskPosition).getName();
+        String taskDescription = tasks.get(chosenTaskPosition).getDescription();
+        name.setText(taskName);
+
+        description.setText(taskDescription);
+    }
+
+    @Override
+    public void setEditTexts(EditText name, EditText description) {
+        String taskName = tasks.get(chosenTaskPosition).getName();
+        String taskDescription = tasks.get(chosenTaskPosition).getDescription();
+        name.setText(taskName);
+        int position = name.getSelectionStart();
+        name.setSelection(position);
+        description.setText(taskDescription);
+    }
+
+    @Override
+    public void setCheckbox (CheckBox taskStatus) {
+        Boolean isChecked = tasks.get(chosenTaskPosition).isCompleted();
+        taskStatus.setChecked(isChecked);
     }
 }
 

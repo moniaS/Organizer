@@ -47,8 +47,9 @@
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/mediumTextSize"
-                android:inputType="text|textMultiLine"
-                android:singleLine="false"/>
+                android:inputType="text"
+                android:singleLine="false"
+                android:imeOptions="actionNext" />
 
         </ViewSwitcher>
 
@@ -81,7 +82,8 @@
                 android:layout_width="205dp"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/mediumTextSize"
-                android:inputType="text|textMultiLine" />
+                android:inputType="text"
+                android:imeOptions="actionDone" />
 
         </ViewSwitcher>
 

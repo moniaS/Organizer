@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="toolbar_elevation">2dp</dimen>
+    <dimen name="margin">10dp</dimen>
+    <dimen name="smallTextSize">14dp</dimen>
+    <dimen name="mediumTextSize">16dp</dimen>
+    <dimen name="largeTextSize">25dp</dimen>
 </resources>
